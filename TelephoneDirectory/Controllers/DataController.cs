@@ -58,7 +58,7 @@
             }
         }
 
-        public async Task<int> Post([FromBody] TelephoneEntry telephoneEntry)
+        public async Task<int> Post([FromBody]TelephoneEntry telephoneEntry)
         {
             using (DataContext context = new DataContext())
             {
