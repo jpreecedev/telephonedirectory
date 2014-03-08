@@ -1,13 +1,13 @@
-# Telephone Directory Sample Website
+# Telephone Directory Sample Application
 A simple telephone directory web application built from scratch using Bootstrap, KnockoutJS, Web API, jQuery and Entity Framework.
 
 This very small, simple project was developed as part of a tutorial to help people new to these technologies improve their understanding.
 
-## Tutorial
+# Tutorial
 
 You can find the tutorial over at [JPreeceDev.com](http://jpreecedev.com/2014/03/08/create-a-telephone-directory-with-bootstrap-knockoutjs-jquery-web-api-and-entity-framework-part-1-of-2/)
 
-## License
+# License
 The MIT License (MIT)
 
 Copyright (c) 2014 jpreecedev
