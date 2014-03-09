@@ -12,17 +12,17 @@
     {
         #region Public Methods and Operators
 
-        public void Delete(int id)
+        public async void Delete(int id)
         {
             using (DataContext context = new DataContext())
             {
-                TelephoneEntry entity = context.TelephoneEntries.FirstOrDefault(t => t.Id == id);
+                TelephoneEntry entity = await context.TelephoneEntries.FirstOrDefaultAsync(t => t.Id == id);
                 if (entity != null)
                 {
                     context.Entry(entity).State = EntityState.Deleted;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

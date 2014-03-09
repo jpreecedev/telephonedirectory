@@ -19,6 +19,8 @@ function TelephoneViewModel() {
     self.resetText = ko.observable('Reset');
     self.selectedIndex = -1;
 
+    var hub = $.connection.entryHub;
+
     self.add = function () {
 
         var entry = new TelephoneEntry({
@@ -28,11 +30,10 @@ function TelephoneViewModel() {
             number: self.number()
         });
 
-        if (self.addText() == 'Add') {
-            self.telephoneEntries.push(entry);
-        }
-        else {
+        if (self.addText() == 'Edit') {
             var oldTelephoneEntry = self.telephoneEntries()[self.selectedIndex];
+            entry.id = self.id();
+
             self.telephoneEntries.replace(oldTelephoneEntry, entry);
         }
 
@@ -54,12 +55,14 @@ function TelephoneViewModel() {
         self.telephoneEntries.destroy(telephoneEntry);
 
         $.ajax({
-            url: 'http://localhost:54946/api/Data/' + telephoneEntry.id,
+            url: '/api/Data/' + telephoneEntry.id,
             type: 'DELETE',
             contentType: "application/json;charset=UTF-8",
             data: JSON.stringify({ id: telephoneEntry.id }),
             dataType: "json"
         });
+
+        hub.server.delete(telephoneEntry);
     };
 
     self.reset = function () {
@@ -73,7 +76,7 @@ function TelephoneViewModel() {
     };
 
     self.load = function () {
-        $.getJSON('http://localhost:54946/api/Data/', function (data) {
+        $.getJSON('/api/Data/', function (data) {
             $.each(data, function (index, item) {
                 self.telephoneEntries.push(new TelephoneEntry({
                     id: item.id,
@@ -86,13 +89,39 @@ function TelephoneViewModel() {
     };
 
     self.post = function (telephoneEntry) {
-        $.post('http://localhost:54946/api/Data/', telephoneEntry, function (id) {
+        $.post('/api/Data/', telephoneEntry, function (id) {
             telephoneEntry.id = id;
+
+            hub.server.addOrUpdate(telephoneEntry);
         });
     };
 
+    hub.client.addOrUpdate = function (telephoneEntry) {
+
+        var result = $.grep(self.telephoneEntries(), function (entry) {
+            return entry.id == telephoneEntry.id;
+        });
+
+        if (result.length == 0) {
+            self.telephoneEntries.push(telephoneEntry);
+        } else {
+            self.telephoneEntries.replace(result[0], telephoneEntry);
+        }
+    };
+
+    hub.client.delete = function (id) {
+        var result = $.grep(self.telephoneEntries(), function (entry) {
+            return entry.id == id;
+        });
+
+        if (result.length > 0)
+            self.telephoneEntries.destroy(result[0]);
+    };
+
+    $.connection.hub.start();
     self.telephoneEntries = ko.observableArray([]);
     self.load();
 }
 
-ko.applyBindings(new TelephoneViewModel());
+var telephoneEntryViewModel = new TelephoneViewModel();
+ko.applyBindings(telephoneEntryViewModel);
